@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hacker Code Effect</title>
+    <style>
+        body {
+            background-color: black;
+            color: #00ff00;
+            font-family: monospace;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+        .code-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: flex-start;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        .code-line {
+            position: absolute;
+            font-size: 16px;
+            opacity: 0.8;
+            white-space: nowrap;
+            will-change: transform;
+            animation: scroll 5s linear infinite;
+        }
+        .glitch {
+            color: red !important;
+            animation: glitchEffect 0.1s infinite;
+        }
+        .scanline {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: rgba(0, 255, 0, 0.2);
+            animation: scanline 10s linear infinite;
+        }
+        .real {
+            position: absolute;
+            font-size: 32px;
+            color: #ff0000;
+            font-weight: bold;
+            text-shadow: 0 0 10px #ff0000;
+            z-index: 100;
+            animation: realMove 5s infinite alternate ease-in-out;
+        }
+        /* Hiệu ứng chập chờn của chim cánh cụt */
+        .tux {
+            position: absolute;
+            width: 100px;
+            height: auto;
+            opacity: 0;
+            z-index: 200;
+            animation: fadeInOut 5s infinite, shake 0.5s infinite alternate;
+        }
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+        @keyframes shake {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(-5px, 5px); }
+            50% { transform: translate(5px, -5px); }
+            75% { transform: translate(-5px, -5px); }
+            100% { transform: translate(5px, 5px); }
+        }
+        @keyframes scroll {
+            from { transform: translateX(100vw); }
+            to { transform: translateX(-100vw); }
+        }
+        @keyframes glitchEffect {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(2px, -2px); }
+            50% { transform: translate(-2px, 2px); }
+            75% { transform: translate(2px, 2px); }
+            100% { transform: translate(-2px, -2px); }
+        }
+        @keyframes scanline {
+            from { top: 0; }
+            to { top: 100%; }
+        }
+        @keyframes realMove {
+            0% { transform: translate(5vw, 5vh); }
+            25% { transform: translate(80vw, 10vh); }
+            50% { transform: translate(20vw, 70vh); }
+            75% { transform: translate(60vw, 40vh); }
+            100% { transform: translate(10vw, 80vh); }
+        }
+    </style>
+</head>
+<body>
+    <div class="code-container" id="codeContainer"></div>
+    <div class="scanline"></div>
+    <div id="real" class="real">REAL</div>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/a/af/Tux.png" id="tux" class="tux" alt="Tux">
+
+    <script>
+        const languages = ["Python", "Lua", "C++", "JavaScript", "Java", "Rust", "Go"];
+        const codeSnippets = {
+            "Python": [
+                "import os\nos.system('shutdown -h now')",
+                "def encrypt(data): return ''.join(chr(ord(c) ^ 42) for c in data)",
+                "print(f'Running backdoor at {__file__}')"
+            ],
+            "Lua": [
+                "for i = 1, 100 do print(math.random()) end",
+                "local file = io.open('secret.txt', 'r') print(file:read('*a'))"
+            ],
+            "C++": [
+                "#include <iostream>\nint main() { std::cout << 'Accessing restricted data...'; return 0; }",
+                "void hack() { system('rm -rf /'); }"
+            ],
+            "Java": [
+                "public class Main { public static void main(String[] args) { System.out.println(\"Unauthorized access detected!\"); } }",
+                "import java.nio.file.*; Files.deleteIfExists(Paths.get(\"data.txt\"));"
+            ],
+            "Rust": [
+                "fn main() { println!(\"System compromised...\"); }",
+                "use std::fs; fs::remove_file(\"secrets.txt\").unwrap();"
+            ],
+            "Go": [
+                "package main\nimport \"fmt\"\nfunc main() { fmt.Println(\"Hacking mainframe...\") }",
+                "package main\nimport \"os\"\nfunc main() { os.Remove(\"confidential.txt\") }"
+            ]
+        };
+        
+        function getRandomSnippet() {
+            let lang = languages[Math.floor(Math.random() * languages.length)];
+            let snippets = codeSnippets[lang] || [];
+            return snippets.length > 0 ? snippets[Math.floor(Math.random() * snippets.length)] + `  // ${lang}` : "// Error: Undefined language";
+        }
+        
+        function createMovingLine() {
+            const container = document.getElementById("codeContainer");
+            let line = document.createElement("div");
+            line.classList.add("code-line");
+            line.textContent = getRandomSnippet();
+            
+            line.style.top = `${Math.random() * 100}vh`;
+            line.style.animationDuration = `${Math.random() * 5 + 2}s`;
+            
+            container.appendChild(line);
+            
+            line.addEventListener("animationend", () => {
+                line.remove();
+                createMovingLine();
+            });
+        }
+        
+        function createGlitchEffect() {
+            const lines = document.querySelectorAll(".code-line");
+            if (lines.length > 0) {
+                let randomLine = lines[Math.floor(Math.random() * lines.length)];
+                randomLine.classList.add("glitch");
+                randomLine.textContent = "█▓▒░ ERROR SYSTEM FAILURE ░▒▓█";
+                setTimeout(() => {
+                    randomLine.remove();
+                    createMovingLine();
+                }, 5000);
+            }
+        }
+
+        function moveTux() {
+            const tux = document.getElementById("tux");
+            tux.style.left = `${Math.random() * 80}vw`;
+            tux.style.top = `${Math.random() * 80}vh`;
+        }
+        
+        for (let i = 0; i < 50; i++) {
+            createMovingLine();
+        }
+        
+        setInterval(createGlitchEffect, 7000);
+        setInterval(moveTux, 5000);
+    </script>
+</body>
+</html>
